@@ -1,0 +1,33 @@
+
+# Docker Compose configuration for the Recipe Sharing Application
+version: '3.8'
+
+services:
+
+  # Backend API service
+  backend:
+    build: ./backend
+    container_name: recipe-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - DB_PATH=/app/data/recipes.db
+    volumes:
+      - recipe-data:/app/data
+
+  # Frontend production service
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:5000
+    container_name: recipe-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+# Persistent storage for the SQLite database
+volumes:
+  recipe-data:
